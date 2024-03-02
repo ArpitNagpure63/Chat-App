@@ -3,14 +3,18 @@ import Users from "../Models/users.js";
 import { setCookies } from "../Utility/cookies.js";
 
 const signupController = async (req, res) => {
-    const { name, username, gender, password } = req.body;
+    const { name, username, gender, password, randomAvatar } = req.body;
     try {
         if (name && username && gender && password) {
+            const nameArray = name.split(' ')
             const isUserExist = await Users.findOne({ username });
             if (!isUserExist) {
                 const newUser = new Users({
                     name, username, gender,
-                    password: bcrypt.hashSync(password, 10)
+                    password: bcrypt.hashSync(password, 10),
+                    profilepic: randomAvatar
+                        ? `https://avatar.iran.liara.run/public/${gender === 'male' ? 'boy' : 'girl'}`
+                        : `https://avatar.iran.liara.run/username?username=${nameArray.length >= 2 ? `${nameArray[0]}+${nameArray[1]}` : name}&length=${nameArray.length === 1 ? 1 : 2}`
                 });
                 await newUser.save();
 
@@ -22,7 +26,8 @@ const signupController = async (req, res) => {
                         _id: newUser._id,
                         name: newUser.name,
                         username: newUser.username,
-                        gender: newUser.gender
+                        gender: newUser.gender,
+                        profilepic: newUser.profilepic
                     }
                 });
             } else {

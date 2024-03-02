@@ -20,7 +20,8 @@ const loginController = async (req, res) => {
                     _id: user._id,
                     name: user.name,
                     username: user.username,
-                    gender: user.gender
+                    gender: user.gender,
+                    profilepic: user.profilepic
                 }
             });
         } else {
