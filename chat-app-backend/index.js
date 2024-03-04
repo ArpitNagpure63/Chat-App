@@ -2,7 +2,9 @@ import express from "express";
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import mongoose from "mongoose";
-import authRouter from "./Routes/authRouter.routes.js";
+import authRouter from "./Routes/auth.routes.js";
+import messageRouter from "./Routes/messsage.routes.js";
+import userRouter from "./Routes/user.routes.js";
 
 const port = process.env.PORT || 4000;
 const app = express();
@@ -13,6 +15,8 @@ app.use(cookieParser());
 
 // API Routes
 app.use('/api/auth/', authRouter);
+app.use('/api/message/', messageRouter);
+app.use('/api/users/', userRouter);
 
 // Start Backend Server
 app.listen(port, () => {
