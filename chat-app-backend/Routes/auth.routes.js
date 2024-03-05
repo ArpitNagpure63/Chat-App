@@ -6,7 +6,7 @@ import logoutController from "../Controllers/logout.controller.js";
 const authRouter = express.Router();
 
 authRouter.post('/signup', signupController);
-authRouter.get('/login', loginController);
+authRouter.post('/login', loginController);
 authRouter.get('/logout', logoutController);
 
 export default authRouter;

@@ -3,24 +3,48 @@ import { useRouter } from "next/navigation";
 import "./login.css";
 import ThemeProvider from "../components/themeprovider";
 import { useState } from "react";
+import Alert from "../components/alertProvider";
 
 const Login = () => {
-    const [userName, setUserName] = useState('');
+    const [username, setUserName] = useState('');
     const [password, setUserPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const [isError, setError] = useState(false);
     const history = useRouter();
 
-    const handleLoginClick = async () => {
-        if (userName && password) {
-            try {
-                // const response = await fetch(`${process.env.API_DOMAIN}api/login`, { userName, password });
-                // console.log(response);
-            } catch (e) {
-                setError(true);
-            }
+    const handleLoginClick = () => {
+        if (username && password) {
+            resetAlertState();
+            validateLoginCredentials();
         } else {
-            setError(true);
+            const errorText = 'Please enter valid username and password';
+            if (!isError) setError(true);
+            if (errorMessage !== errorText) setErrorMessage(errorText);
         }
+    };
+
+    const validateLoginCredentials = async () => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/auth/login`,
+            {
+                method: 'POST',
+                headers: {
+                    ['content-type']: 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            }
+        );
+        const data = await response.json();
+        if (data.isError) {
+            setError(true);
+            setErrorMessage(data.error);
+        } else {
+            console.log(data);
+        }
+    };
+
+    const resetAlertState = () => {
+        setError(false);
+        setErrorMessage('');
     };
 
     return <div className="flex overflow-hidden justify-center w-screen h-screen">
@@ -37,7 +61,7 @@ const Login = () => {
                     type="text"
                     className="grow"
                     placeholder="Username"
-                    value={userName}
+                    value={username}
                     onChange={(e) => setUserName(e.target.value)}
                 />
             </label>
@@ -59,6 +83,7 @@ const Login = () => {
             <div className="divider ml-5 mr-5">Or</div>
             <button className="btn btn-neutral w-11/12 mt-4 login-button" onClick={() => history.push('/signup')}>Sign Up</button>
         </div>
+        <Alert isAlertVisible={isError} alertText={errorMessage} clickHandler={resetAlertState} />
     </div>
 };
 

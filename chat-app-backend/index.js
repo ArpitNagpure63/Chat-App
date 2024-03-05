@@ -2,6 +2,8 @@ import express from "express";
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import mongoose from "mongoose";
+import cors from 'cors';
+import bodyParser from "body-parser";
 import authRouter from "./Routes/auth.routes.js";
 import messageRouter from "./Routes/messsage.routes.js";
 import userRouter from "./Routes/user.routes.js";
@@ -10,7 +12,8 @@ const port = process.env.PORT || 4000;
 const app = express();
 
 // Applcation middleware
-app.use(express.json());
+app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 // API Routes
