@@ -2,50 +2,37 @@
 import { useRouter } from "next/navigation";
 import "./login.css";
 import ThemeProvider from "../components/themeprovider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Alert from "../components/alertProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, resetErrorState, setErrorMessage, setErrorState } from "../slice/userSlice";
 
 const Login = () => {
     const [username, setUserName] = useState('');
     const [password, setUserPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isError, setError] = useState(false);
+    const { isError, errorMessage, userAuthenticated } = useSelector((state) => state.user);
     const history = useRouter();
+    const dispatch = useDispatch();
 
     const handleLoginClick = () => {
         if (username && password) {
-            resetAlertState();
-            validateLoginCredentials();
+            dispatch(resetErrorState());
+            dispatch(loginUser({ username, password }));
         } else {
             const errorText = 'Please enter valid username and password';
-            if (!isError) setError(true);
-            if (errorMessage !== errorText) setErrorMessage(errorText);
+            if (!isError) dispatch(setErrorState());
+            if (errorMessage !== errorText) dispatch(setErrorMessage(errorText));
         }
     };
 
-    const validateLoginCredentials = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/auth/login`,
-            {
-                method: 'POST',
-                headers: {
-                    ['content-type']: 'application/json'
-                },
-                body: JSON.stringify({ username, password })
-            }
-        );
-        const data = await response.json();
-        if (data.isError) {
-            setError(true);
-            setErrorMessage(data.error);
-        } else {
-            console.log(data);
-        }
+    const handleSignupClick = () => {
+        dispatch(resetErrorState());
+        history.push('/signup');
     };
 
-    const resetAlertState = () => {
-        setError(false);
-        setErrorMessage('');
-    };
+    useEffect(() => {
+        if (userAuthenticated) history.push('/dashboard');
+    }, [userAuthenticated]);
 
     return <div className="flex overflow-hidden justify-center w-screen h-screen">
         <ThemeProvider />
@@ -81,9 +68,9 @@ const Login = () => {
                 Log In
             </button>
             <div className="divider ml-5 mr-5">Or</div>
-            <button className="btn btn-neutral w-11/12 mt-4 login-button" onClick={() => history.push('/signup')}>Sign Up</button>
+            <button className="btn btn-neutral w-11/12 mt-4 login-button" onClick={handleSignupClick}>Sign Up</button>
         </div>
-        <Alert isAlertVisible={isError} alertText={errorMessage} clickHandler={resetAlertState} />
+        <Alert isAlertVisible={isError} alertText={errorMessage} clickHandler={() => dispatch(resetErrorState())} />
     </div>
 };
 

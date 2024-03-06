@@ -1,9 +1,12 @@
 'use client';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./signup.css";
 import Link from "next/link";
 import ThemeProvider from "../components/themeprovider";
 import Alert from "../components/alertProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { resetErrorState, setErrorMessage, setErrorState, signUpNewUser } from "../slice/userSlice";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
     const [name, setName] = useState('');
@@ -11,8 +14,9 @@ const Signup = () => {
     const [password, setUserPassword] = useState('');
     const [gender, setGender] = useState('male');
     const [randomAvatar, setRandomAvatar] = useState(true);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isError, setError] = useState(false);
+    const { isError, errorMessage, userAuthenticated } = useSelector((state) => state.user);
+    const history = useRouter();
+    const dispatch = useDispatch();
 
     const handleGenderRadioClick = (event) => {
         if (event.target.value !== gender) setGender(event.target.value);
@@ -20,38 +24,21 @@ const Signup = () => {
 
     const handleSignupClick = () => {
         if (name && username && password && gender) {
-            resetAlertState();
-            registerNewUser();
+            dispatch(resetErrorState());
+            dispatch(signUpNewUser({ name, username, password, gender, randomAvatar }));
         } else {
             const errorText = 'Please enter all required fields';
-            if (!isError) setError(true);
-            if (errorMessage !== errorText) setErrorMessage(errorText);
+            if (!isError) dispatch(setErrorState());
+            if (errorMessage !== errorText) dispatch(setErrorMessage(errorText));
         }
     };
 
-    const registerNewUser = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/auth/signup`,
-            {
-                method: 'POST',
-                headers: {
-                    ['content-type']: 'application/json'
-                },
-                body: JSON.stringify({ name, username, password, gender, randomAvatar })
-            }
-        );
-        const data = await response.json();
-        if (data.isError) {
-            setError(true);
-            setErrorMessage(data.error);
-        } else {
-            console.log(data);
+    useEffect(() => {
+        if (userAuthenticated) history.push('/dashboard');
+        return () => {
+            dispatch(resetErrorState());
         }
-    };
-
-    const resetAlertState = () => {
-        setError(false);
-        setErrorMessage('');
-    };
+    }, [userAuthenticated]);
 
     return <div className="flex overflow-hidden justify-center w-screen h-screen">
         <ThemeProvider />
@@ -117,7 +104,7 @@ const Signup = () => {
                 <Link href="/login" className="btn-link">Login</Link>
             </label>
         </div>
-        <Alert isAlertVisible={isError} alertText={errorMessage} clickHandler={resetAlertState} />
+        <Alert isAlertVisible={isError} alertText={errorMessage} clickHandler={() => dispatch(resetErrorState())} />
     </div>
 };
 
