@@ -12,7 +12,7 @@ const port = process.env.PORT || 4000;
 const app = express();
 
 // Applcation middleware
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 

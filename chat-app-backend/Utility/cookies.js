@@ -9,7 +9,7 @@ const setCookies = async (userID, res) => {
         username: user.username,
         gender: user.gender
     }, process.env.TOKEN_KEY, { expiresIn: '15hr' });
-    res.cookie('token', jwtToken, { maxAge: 15 * 60 * 60 * 1000, httpOnly: true });
+    res.cookie('token', jwtToken, { maxAge: 15 * 60 * 60 * 1000, secure: false, httpOnly: true });
 };
 
 export { setCookies };

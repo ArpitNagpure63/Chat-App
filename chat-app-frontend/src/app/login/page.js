@@ -31,7 +31,7 @@ const Login = () => {
     };
 
     useEffect(() => {
-        if (userAuthenticated) history.push('/dashboard');
+        // if (userAuthenticated) history.push('/dashboard');
     }, [userAuthenticated]);
 
     return <div className="flex overflow-hidden justify-center w-screen h-screen">

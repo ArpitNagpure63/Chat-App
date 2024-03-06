@@ -3,6 +3,7 @@ const { createSlice, createAsyncThunk } = require("@reduxjs/toolkit");
 export const signUpNewUser = createAsyncThunk('auth/signup', async ({ name, username, password, gender, randomAvatar }) => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/auth/signup`,
         {
+            credentials: 'include',
             method: 'POST',
             headers: {
                 ['content-type']: 'application/json'
@@ -16,6 +17,7 @@ export const signUpNewUser = createAsyncThunk('auth/signup', async ({ name, user
 export const loginUser = createAsyncThunk('auth/login', async ({ username, password }) => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/auth/login`,
         {
+            credentials: 'include',
             method: 'POST',
             headers: {
                 ['content-type']: 'application/json'
