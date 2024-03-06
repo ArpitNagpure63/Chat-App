@@ -2,10 +2,10 @@
 import { useEffect, useState } from "react";
 import "./signup.css";
 import Link from "next/link";
-import ThemeProvider from "../components/themeprovider";
-import Alert from "../components/alertProvider";
+import ThemeProvider from "../components/themeSelector";
+import Alert from "../components/alertToast";
 import { useDispatch, useSelector } from "react-redux";
-import { resetErrorState, setErrorMessage, setErrorState, signUpNewUser } from "../slice/userSlice";
+import { resetErrorState, setErrorMessage, setErrorState, signUpNewUser } from "../redux/slice/userSlice";
 import { useRouter } from "next/navigation";
 
 const Signup = () => {

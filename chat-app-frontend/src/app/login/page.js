@@ -1,11 +1,11 @@
 'use client';
 import { useRouter } from "next/navigation";
 import "./login.css";
-import ThemeProvider from "../components/themeprovider";
+import ThemeProvider from "../components/themeSelector";
 import { useEffect, useState } from "react";
-import Alert from "../components/alertProvider";
+import Alert from "../components/alertToast";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, resetErrorState, setErrorMessage, setErrorState } from "../slice/userSlice";
+import { loginUser, resetErrorState, setErrorMessage, setErrorState } from "../redux/slice/userSlice";
 
 const Login = () => {
     const [username, setUserName] = useState('');
