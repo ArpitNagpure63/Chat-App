@@ -28,6 +28,19 @@ export const loginUser = createAsyncThunk('auth/login', async ({ username, passw
     return response.json();
 });
 
+export const getOtherUsers = createAsyncThunk('chat/user', async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/users`,
+        {
+            credentials: 'include',
+            method: 'GET',
+            headers: {
+                ['content-type']: 'application/json'
+            }
+        }
+    );
+    return response.json();
+});
+
 const userSlice = createSlice({
     name: 'user',
     initialState: {
@@ -35,14 +48,15 @@ const userSlice = createSlice({
         userInfo: null,
         isLoading: false,
         isError: false,
-        errorMessage: ''
+        errorMessage: '',
+        otherUsers: [],
     },
     reducers: {
         resetErrorState: (state, _action) => {
             state.isError = false;
             state.errorMessage = '';
         },
-        setErrorState: (state, action) => {
+        setErrorState: (state, _action) => {
             state.isError = true;
         },
         setErrorMessage: (state, action) => {
@@ -79,6 +93,20 @@ const userSlice = createSlice({
                 }
             })
             .addCase(signUpNewUser.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(getOtherUsers.pending, (state, action) => {
+                state.isLoading = true;
+            })
+            .addCase(getOtherUsers.fulfilled, (state, action) => {
+                state.isLoading = false;
+                if (action.payload.isError) state.isError = true;
+                if (action.payload.error) state.errorMessage = action.payload.error;
+                if (action.payload.users) {
+                    state.otherUsers = [...action.payload.users];
+                }
+            })
+            .addCase(getOtherUsers.rejected, (state, action) => {
                 state.isLoading = false;
             })
     }
