@@ -28,7 +28,7 @@ const newMessageController = async (req, res) => {
 
             await Promise.all([newMessasge.save(), conversations.save()])
 
-            res.status(201).send(newMessasge);
+            res.status(201).send({newMessasge});
         } catch (e) {
             res.status(400).send({ isError: true, error: 'Error in new message controllers' });
         }

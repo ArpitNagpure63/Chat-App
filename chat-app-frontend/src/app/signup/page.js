@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState } from "react";
-import "./signup.css";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
 import ThemeProvider from "../components/themeSelector";
 import Alert from "../components/alertToast";
-import { useDispatch, useSelector } from "react-redux";
 import { resetErrorState, setErrorMessage, setErrorState, signUpNewUser } from "../redux/slice/userSlice";
-import { useRouter } from "next/navigation";
+import "./signup.css";
 
 const Signup = () => {
     const [name, setName] = useState('');
@@ -14,7 +14,7 @@ const Signup = () => {
     const [password, setUserPassword] = useState('');
     const [gender, setGender] = useState('male');
     const [randomAvatar, setRandomAvatar] = useState(true);
-    const { isError, errorMessage, userAuthenticated } = useSelector((state) => state.user);
+    const { isError, errorMessage, userAuthenticated, userInfo } = useSelector((state) => state.user);
     const history = useRouter();
     const dispatch = useDispatch();
 
@@ -34,7 +34,10 @@ const Signup = () => {
     };
 
     useEffect(() => {
-        if (userAuthenticated) history.push('/dashboard');
+        if (userAuthenticated) {
+            sessionStorage.setItem('loggedInUser', JSON.stringify(userInfo));
+            history.push('/dashboard');
+        }
         return () => {
             dispatch(resetErrorState());
         }

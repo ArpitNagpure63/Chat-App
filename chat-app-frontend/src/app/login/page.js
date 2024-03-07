@@ -1,16 +1,16 @@
 'use client';
 import { useRouter } from "next/navigation";
-import "./login.css";
-import ThemeProvider from "../components/themeSelector";
 import { useEffect, useState } from "react";
-import Alert from "../components/alertToast";
 import { useDispatch, useSelector } from "react-redux";
+import Alert from "../components/alertToast";
+import ThemeProvider from "../components/themeSelector";
 import { loginUser, resetErrorState, setErrorMessage, setErrorState } from "../redux/slice/userSlice";
+import "./login.css";
 
 const Login = () => {
     const [username, setUserName] = useState('');
     const [password, setUserPassword] = useState('');
-    const { isError, errorMessage, userAuthenticated } = useSelector((state) => state.user);
+    const { isError, errorMessage, userAuthenticated, userInfo } = useSelector((state) => state.user);
     const history = useRouter();
     const dispatch = useDispatch();
 
@@ -31,7 +31,10 @@ const Login = () => {
     };
 
     useEffect(() => {
-        if (userAuthenticated) history.push('/dashboard');
+        if (userAuthenticated && userInfo) {
+            sessionStorage.setItem('loggedInUser', JSON.stringify(userInfo));
+            history.push('/dashboard');
+        }
     }, [userAuthenticated]);
 
     return <div className="flex overflow-hidden justify-center w-screen h-screen">

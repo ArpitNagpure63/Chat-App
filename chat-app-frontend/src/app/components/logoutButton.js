@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 const Logout = ({ handleLogoutClick }) => {
     return <>
         <button className="btn btn-square absolute right-6 bottom-6 bg-red-500 hover:bg-red-600" onClick={handleLogoutClick}>
