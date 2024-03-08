@@ -62,7 +62,7 @@ const userSlice = createSlice({
         isLoading: false,
         isError: false,
         errorMessage: '',
-        otherUsers: [],
+        allUsers: [],
     },
     reducers: {
         resetErrorState: (state) => {
@@ -120,7 +120,7 @@ const userSlice = createSlice({
                 if (action.payload.isError) state.isError = true;
                 if (action.payload.error) state.errorMessage = action.payload.error;
                 if (action.payload.users) {
-                    state.otherUsers = [...action.payload.users];
+                    state.allUsers = [...action.payload.users];
                 }
             })
             .addCase(getOtherUsers.rejected, (state) => {
@@ -135,7 +135,7 @@ const userSlice = createSlice({
                 state.isLoading = false;
                 state.isError = false;
                 state.errorMessage = '';
-                state.otherUsers = [];
+                state.allUsers = [];
             })
             .addCase(logoutUser.rejected, (state) => {
                 state.isLoading = false;

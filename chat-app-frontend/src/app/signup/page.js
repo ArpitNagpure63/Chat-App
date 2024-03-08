@@ -7,6 +7,7 @@ import ThemeProvider from "../components/themeSelector";
 import Alert from "../components/alertToast";
 import { resetErrorState, setErrorMessage, setErrorState, signUpNewUser } from "../redux/slice/userSlice";
 import "./signup.css";
+import Loader from "../components/loader";
 
 const Signup = () => {
     const [name, setName] = useState('');
@@ -14,7 +15,7 @@ const Signup = () => {
     const [password, setUserPassword] = useState('');
     const [gender, setGender] = useState('male');
     const [randomAvatar, setRandomAvatar] = useState(true);
-    const { isError, errorMessage, userAuthenticated, userInfo } = useSelector((state) => state.user);
+    const { isError, errorMessage, userAuthenticated, userInfo, isLoading } = useSelector((state) => state.user);
     const history = useRouter();
     const dispatch = useDispatch();
 
@@ -108,6 +109,7 @@ const Signup = () => {
             </label>
         </div>
         <Alert isAlertVisible={isError} alertText={errorMessage} clickHandler={() => dispatch(resetErrorState())} />
+        <Loader showLoader={isLoading} classes="top-2/4" />
     </div>
 };
 

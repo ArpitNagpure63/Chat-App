@@ -6,11 +6,12 @@ import Alert from "../components/alertToast";
 import ThemeProvider from "../components/themeSelector";
 import { loginUser, resetErrorState, setErrorMessage, setErrorState } from "../redux/slice/userSlice";
 import "./login.css";
+import Loader from "../components/loader";
 
 const Login = () => {
     const [username, setUserName] = useState('');
     const [password, setUserPassword] = useState('');
-    const { isError, errorMessage, userAuthenticated, userInfo } = useSelector((state) => state.user);
+    const { isError, errorMessage, userAuthenticated, userInfo, isLoading } = useSelector((state) => state.user);
     const history = useRouter();
     const dispatch = useDispatch();
 
@@ -74,6 +75,7 @@ const Login = () => {
             <button className="btn btn-neutral w-11/12 mt-4 login-button" onClick={handleSignupClick}>Sign Up</button>
         </div>
         <Alert isAlertVisible={isError} alertText={errorMessage} clickHandler={() => dispatch(resetErrorState())} />
+        <Loader showLoader={isLoading} classes="top-2/4"/>
     </div>
 };
 

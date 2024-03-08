@@ -30,7 +30,7 @@ export const getAllMessages = createAsyncThunk('chat/get', async ({ recieverID }
 const messageSlice = createSlice({
     name: 'messages',
     initialState: {
-        userList: [],
+        userFriendsList: [],
         onGoingUserChat: null,
         isLoading: false,
         errorMessage: '',
@@ -39,13 +39,13 @@ const messageSlice = createSlice({
     },
     reducers: {
         setNewConversation: (state, action) => {
-            state.userList.push(action.payload);
+            state.userFriendsList.push(action.payload);
         },
         setNewChat: (state, action) => {
             state.onGoingUserChat = action.payload;
         },
         resetConversation: (state) => {
-            state.userList = [];
+            state.userFriendsList = [];
             state.onGoingUserChat = null;
             state.isLoading = false;
             state.errorMessage = '';

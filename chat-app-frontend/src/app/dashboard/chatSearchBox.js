@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { xorBy } from "lodash";
 import { setNewChat, setNewConversation } from "../redux/slice/messagesSlice";
 import { setErrorMessage, setErrorState } from "../redux/slice/userSlice";
 
@@ -9,8 +8,8 @@ const ChatSearchBox = () => {
     const [searchError, setSearchError] = useState(false);
     const [userSearchInput, setUserSearchInput] = useState('');
     const [searchedUsers, setSearchedUsers] = useState([]);
-    const { otherUsers } = useSelector(state => state.user);
-    const { userList, onGoingUserChat } = useSelector(state => state.message);
+    const { allUsers } = useSelector(state => state.user);
+    const { userFriendsList, onGoingUserChat } = useSelector(state => state.message);
     const dispatch = useDispatch();
 
     const handleTextErrorState = () => {
@@ -21,16 +20,23 @@ const ChatSearchBox = () => {
     const handleInputChange = (e) => {
         const inputValue = e.target.value.toLowerCase();
         setUserSearchInput(inputValue);
-        if (otherUsers.length) {
+        if (allUsers.length) {
             const newUsers = [];
             if (inputValue) {
-                for (let item of otherUsers) {
+                for (let item of allUsers) {
                     if (item.name.toLowerCase().includes(inputValue)) {
                         newUsers.push(item);
                     }
                 }
             }
-            const remainingUsers = newUsers.length ? xorBy(newUsers, userList, '_id') : [];
+            let remainingUsers = [];
+            if (newUsers.length) {
+                newUsers.forEach((item) => {
+                    if (!userFriendsList.includes(item)) {
+                        remainingUsers.push(item);
+                    }
+                })
+            }
             setSearchError(!remainingUsers.length);
             setSearchedUsers([...remainingUsers]);
         } else {
@@ -46,7 +52,7 @@ const ChatSearchBox = () => {
     };
 
     return <div className="border-r-2 border-base-100 pr-4" onClick={handleTextErrorState}>
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full">
             <label className="form-control">
                 <div className="label">
                     {searchError && <span className="label-text-alt text-red-400">User not found</span>}
@@ -81,11 +87,11 @@ const ChatSearchBox = () => {
                     })
                 }
             </div>
-            <div className="flex flex-col mt-4 shadow-xl rounded-md cursor-pointer">
+            <div className="flex flex-col mt-4 shadow-xl rounded-md cursor-pointer overflow-hidden overflow-y-scroll no-scrollbar">
                 {
-                    userList.map((item, index) => {
+                    userFriendsList.map((item, index) => {
                         return <div className={`${onGoingUserChat && onGoingUserChat._id === item._id ? 'bg-blue-800' : 'bg-base-100'}
-                        flex items-center p-2 pl-3 h-14 my-px rounded-md bg-base-100 hover:bg-blue-800`}
+                        flex items-center p-2 pl-3 h-14 my-1 rounded-md bg-base-100 hover:glass`}
                             key={index}
                             onClick={() => dispatch(setNewChat(item))}
                         >

@@ -1,5 +1,5 @@
-const Loader = ({ showLoader }) => {
-    return showLoader && <div className="absolute">
+const Loader = ({ showLoader, classes }) => {
+    return showLoader && <div className={`absolute ${classes}`}>
         <span className="loading loading-spinner loading-lg"></span>
     </div>
 };
