@@ -1,16 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Image from "next/image";
+import moment from 'moment';
 import { getAllMessages, sendNewMessage } from "../redux/slice/messagesSlice";
 
 const ChatBox = () => {
     const [message, setMessage] = useState('');
-    const { onGoingUserChat } = useSelector(state => state.message);
+    const { onGoingUserChat, chats } = useSelector(state => state.message);
+    const { userInfo } = useSelector(state => state.user);
     const dispatch = useDispatch();
+    const chatBoxRef = useRef(null);
 
     const handleSendMessge = () => {
         const recieverID = onGoingUserChat?._id;
         if (message) dispatch(sendNewMessage({ message, recieverID }));
     };
+
+    const scrollToBottom = () => {
+        chatBoxRef?.current?.scrollIntoView({ behavior: "smooth" });
+    }
 
     useEffect(() => {
         const recieverID = onGoingUserChat?._id;
@@ -19,40 +27,56 @@ const ChatBox = () => {
         }
     }, [onGoingUserChat]);
 
+    useEffect(() => {
+        setMessage('');
+        scrollToBottom();
+    }, [chats]);
+
     return <div className="px-4 chat-box-wrapper">
         {
             onGoingUserChat ? <>
                 <div className="my-3 overflow-hidden overflow-y-scroll no-scrollbar chat-window">
-                    <div className="chat chat-start">
-                        <div className="chat-image avatar">
-                            <div className="w-10 rounded-full">
-                                <img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                    {
+                        chats.map((item, index) => {
+                            return <div key={index} className="cursor-pointer m-2">
+                                {
+                                    item.senderID === onGoingUserChat._id
+                                        ? <div className="chat chat-start">
+                                            <div className="chat-image avatar">
+                                                <div className="w-10 rounded-full">
+                                                    <Image src={onGoingUserChat.profilepic} alt='profile pic' width={100} height={100} />
+                                                </div>
+                                            </div>
+                                            <div className="chat-header">
+                                                {onGoingUserChat.name}
+                                                <time className="text-xs opacity-50 ml-2">{moment(item.createdAt).format("hh:mm A")}</time>
+                                            </div>
+                                            <div className="chat-bubble">{item.messageText}</div>
+                                        </div>
+                                        :
+                                        <div className="chat chat-end">
+                                            <div className="chat-image avatar">
+                                                <div className="w-10 rounded-full">
+                                                    <Image src={userInfo.profilepic} alt='profile pic' width={100} height={100} />
+                                                </div>
+                                            </div>
+                                            <div className="chat-header">
+                                                <time className="text-xs opacity-50">{moment(item.createdAt).format("hh:mm A")}</time>
+                                            </div>
+                                            <div className="chat-bubble">{item.messageText}</div>
+                                        </div>
+                                }
                             </div>
-                        </div>
-                        <div className="chat-header">
-                            Obi-Wan Kenobi
-                            <time className="text-xs opacity-50">12:45</time>
-                        </div>
-                        <div className="chat-bubble">You were the Chosen One!</div>
-                    </div>
-                    <div className="chat chat-end">
-                        <div className="chat-image avatar">
-                            <div className="w-10 rounded-full">
-                                <img alt="Tailwind CSS chat bubble component" src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-                            </div>
-                        </div>
-                        <div className="chat-header">
-                            Obi-Wan Kenobi
-                            <time className="text-xs opacity-50">12:45</time>
-                        </div>
-                        <div className="chat-bubble">You were the Chosen One!</div>
-                    </div>
+                        })
+                    }
+                    <div ref={chatBoxRef} />
                 </div>
                 <label className="input input-bordered flex items-center gap-2">
                     <input
                         type="text"
                         className="grow"
                         placeholder="Say hello"
+                        value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
                     <svg

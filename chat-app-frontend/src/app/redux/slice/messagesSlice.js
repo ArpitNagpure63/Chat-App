@@ -47,10 +47,10 @@ const messageSlice = createSlice({
         resetConversation: (state) => {
             state.userList = [];
             state.onGoingUserChat = null;
-            isLoading = false;
-            errorMessage = '';
-            isError = false;
-            chats = [];
+            state.isLoading = false;
+            state.errorMessage = '';
+            state.isError = false;
+            state.chats = [];
         }
     },
     extraReducers(builder) {

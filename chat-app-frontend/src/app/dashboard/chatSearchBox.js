@@ -63,11 +63,11 @@ const ChatSearchBox = () => {
                     </svg>
                 </label>
             </label>
-            <div className="flex flex-col bg-gray-400 shadow-xl m-1 absolute z-10 rounded-md cursor-pointer search-box">
+            <div className="flex flex-col bg-gray-700 shadow-xl m-1 absolute z-10 rounded-md cursor-pointer search-box">
                 {
                     searchedUsers.map((item, index) => {
                         return <div
-                            className="flex items-center p-2 h-12 text-black hover:bg-gray-700"
+                            className="flex items-center p-2 h-12 text-black hover:bg-gray-800"
                             key={index}
                             onClick={() => handleSearchedUserClick(item)}
                         >
