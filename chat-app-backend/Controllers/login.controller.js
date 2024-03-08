@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import Users from "../Models/users.js";
-import { setCookies } from "../Utility/cookies.js";
+import Users from "../models/users.js";
+import { setCookies } from "../utility/cookies.js";
 
 const loginController = async (req, res) => {
     const { username, password } = req.body;

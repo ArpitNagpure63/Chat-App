@@ -32,7 +32,8 @@ const ChatSearchBox = () => {
             let remainingUsers = [];
             if (newUsers.length) {
                 newUsers.forEach((item) => {
-                    if (!userFriendsList.includes(item)) {
+                    const isFriend = userFriendsList.some((i) => i._id === item._id);
+                    if (!isFriend) {
                         remainingUsers.push(item);
                     }
                 })
@@ -91,7 +92,7 @@ const ChatSearchBox = () => {
                 {
                     userFriendsList.map((item, index) => {
                         return <div className={`${onGoingUserChat && onGoingUserChat._id === item._id ? 'bg-blue-800' : 'bg-base-100'}
-                        flex items-center p-2 pl-3 h-14 my-1 rounded-md bg-base-100 hover:glass`}
+                        flex items-center p-2 pl-3 h-14 mt-1 rounded-md bg-base-100 hover:glass`}
                             key={index}
                             onClick={() => dispatch(setNewChat(item))}
                         >

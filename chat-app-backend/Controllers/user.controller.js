@@ -1,4 +1,4 @@
-import Users from "../Models/users.js";
+import Users from "../models/users.js";
 
 const userController = async (req, res) => {
     const { _id: senderID } = req.user;

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { getOtherUsers, logoutUser, resetErrorState, setUserAuthState } from "../redux/slice/userSlice";
-import { resetConversation } from "../redux/slice/messagesSlice";
+import { getUserConversation, resetConversation } from "../redux/slice/messagesSlice";
 import Alert from "../components/alertToast";
 import Logout from "../components/logoutButton";
 import Loader from "../components/loader";
@@ -27,6 +27,7 @@ const Dashboard = () => {
         const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
         if (userAuthenticated) {
             dispatch(getOtherUsers());
+            dispatch(getUserConversation());
         } else if (loggedInUser?._id) {
             dispatch(setUserAuthState(loggedInUser));
         } else {

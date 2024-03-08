@@ -1,5 +1,5 @@
-import Conversations from "../Models/conversations.js";
-import Messages from "../Models/messages.js";
+import Conversations from "../models/conversations.js";
+import Messages from "../models/messages.js";
 
 const newMessageController = async (req, res) => {
     const { recieverID } = req.params;

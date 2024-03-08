@@ -1,11 +1,11 @@
 import express from "express";
-import newMessageController from "../Controllers/newMessage.controller.js";
-import getMessageController from "../Controllers/getMessage.controller.js";
-import VerifyAuth from "../Middlewares/auth.middleware.js";
+import newMessageController from "../controllers/newMessage.controller.js";
+import getMessageController from "../controllers/getMessage.controller.js";
+import verifyAuth from "../middlewares/auth.middleware.js";
 
 const messageRouter = express.Router();
 
-messageRouter.post('/send/:recieverID', VerifyAuth, newMessageController);
-messageRouter.get('/:recieverID', VerifyAuth, getMessageController);
+messageRouter.post('/send/:recieverID', verifyAuth, newMessageController);
+messageRouter.get('/:recieverID', verifyAuth, getMessageController);
 
 export default messageRouter;

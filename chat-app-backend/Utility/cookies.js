@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import Users from "../Models/users.js";
+import Users from "../models/users.js";
 
 const setCookies = async (userID, res) => {
     const user = await Users.findOne({ _id: userID });

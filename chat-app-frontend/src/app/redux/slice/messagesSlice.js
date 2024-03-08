@@ -27,6 +27,19 @@ export const getAllMessages = createAsyncThunk('chat/get', async ({ recieverID }
     return response.json();
 });
 
+export const getUserConversation = createAsyncThunk('chat/conversation', async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/conversation/`,
+        {
+            credentials: 'include',
+            method: 'GET',
+            headers: {
+                ['content-type']: 'application/json'
+            },
+        }
+    );
+    return response.json();
+});
+
 const messageSlice = createSlice({
     name: 'messages',
     initialState: {
@@ -39,7 +52,7 @@ const messageSlice = createSlice({
     },
     reducers: {
         setNewConversation: (state, action) => {
-            state.userFriendsList.push(action.payload);
+            state.userFriendsList.unshift(action.payload);
         },
         setNewChat: (state, action) => {
             state.onGoingUserChat = action.payload;
@@ -81,6 +94,20 @@ const messageSlice = createSlice({
                 }
             })
             .addCase(getAllMessages.rejected, (state) => {
+                state.isLoading = false;
+            })
+            .addCase(getUserConversation.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getUserConversation.fulfilled, (state, action) => {
+                state.isLoading = false;
+                if (action.payload.isError) state.isError = true;
+                if (action.payload.error) state.errorMessage = action.payload.error;
+                if (action.payload.userConversations) {
+                    state.userFriendsList = action.payload.userConversations;
+                }
+            })
+            .addCase(getUserConversation.rejected, (state) => {
                 state.isLoading = false;
             })
     }
