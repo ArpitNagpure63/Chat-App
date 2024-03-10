@@ -13,7 +13,7 @@ const signupController = async (req, res) => {
                     name, username, gender,
                     password: bcrypt.hashSync(password, 10),
                     profilepic: randomAvatar
-                        ? `https://avatar.iran.liara.run/public/${gender === 'male' ? 'boy' : 'girl'}`
+                        ? `https://avatar.iran.liara.run/public/${gender === 'male' ? 'boy' : 'girl'}?username=${name}`
                         : `https://avatar.iran.liara.run/username?username=${nameArray.length >= 2 ? `${nameArray[0]}+${nameArray[1]}` : name}&length=${nameArray.length === 1 ? 1 : 2}`
                 });
                 await newUser.save();

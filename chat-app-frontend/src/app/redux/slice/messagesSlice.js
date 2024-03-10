@@ -46,6 +46,7 @@ const messageSlice = createSlice({
         userFriendsList: [],
         onGoingUserChat: null,
         isLoading: false,
+        isMessageSending: false,
         errorMessage: '',
         isError: false,
         chats: []
@@ -69,10 +70,10 @@ const messageSlice = createSlice({
     extraReducers(builder) {
         builder
             .addCase(sendNewMessage.pending, (state) => {
-                state.isLoading = true;
+                state.isMessageSending = true;
             })
             .addCase(sendNewMessage.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isMessageSending = false;
                 if (action.payload.isError) state.isError = true;
                 if (action.payload.error) state.errorMessage = action.payload.error;
                 if (action.payload.newMessasge) {
@@ -80,7 +81,7 @@ const messageSlice = createSlice({
                 }
             })
             .addCase(sendNewMessage.rejected, (state) => {
-                state.isLoading = false;
+                state.isMessageSending = false;
             })
             .addCase(getAllMessages.pending, (state) => {
                 state.isLoading = true;
