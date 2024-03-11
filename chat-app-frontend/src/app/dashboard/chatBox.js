@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import moment from 'moment';
 import { getAllMessages, sendNewMessage } from "../redux/slice/messagesSlice";
+import Skeleton from "../components/skeleton";
 
 const ChatBox = () => {
     const [message, setMessage] = useState('');
-    const { onGoingUserChat, chats, isMessageSending } = useSelector(state => state.message);
+    const { onGoingUserChat, chats, isMessageSending, isLoading } = useSelector(state => state.message);
     const { userInfo } = useSelector(state => state.user);
     const dispatch = useDispatch();
     const chatBoxRef = useRef(null);
@@ -44,37 +45,39 @@ const ChatBox = () => {
                 <div className="my-3 overflow-hidden overflow-y-scroll no-scrollbar chat-window">
                     {
                         chats.length ?
-                            chats.map((item, index) => {
-                                return <div key={index} className="cursor-pointer m-2">
-                                    {
-                                        item.senderID === onGoingUserChat._id
-                                            ? <div className="chat chat-start">
-                                                <div className="chat-image avatar">
-                                                    <div className="w-10 rounded-full">
-                                                        <Image src={onGoingUserChat.profilepic} alt='profile pic' width={100} height={100} />
+                            isLoading
+                                ? <Skeleton />
+                                : chats.map((item, index) => {
+                                    return <div key={index} className="cursor-pointer m-2">
+                                        {
+                                            item.senderID === onGoingUserChat._id
+                                                ? <div className="chat chat-start">
+                                                    <div className="chat-image avatar">
+                                                        <div className="w-10 rounded-full">
+                                                            <Image src={onGoingUserChat.profilepic} alt='profile pic' width={100} height={100} />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="chat-header">
-                                                    {onGoingUserChat.name}
-                                                    <time className="text-xs opacity-50 ml-2">{moment(item.createdAt).startOf('seconds').fromNow()}</time>
-                                                </div>
-                                                <div className="chat-bubble">{item.messageText}</div>
-                                            </div>
-                                            :
-                                            <div className="chat chat-end">
-                                                <div className="chat-image avatar">
-                                                    <div className="w-10 rounded-full">
-                                                        <Image src={userInfo.profilepic} alt='profile pic' width={100} height={100} />
+                                                    <div className="chat-header">
+                                                        {onGoingUserChat.name}
+                                                        <time className="text-xs opacity-50 ml-2">{moment(item.createdAt).startOf('seconds').fromNow()}</time>
                                                     </div>
+                                                    <div className="chat-bubble">{item.messageText}</div>
                                                 </div>
-                                                <div className="chat-header">
-                                                    <time className="text-xs opacity-50">{moment(item.createdAt).startOf('seconds').fromNow()}</time>
+                                                :
+                                                <div className="chat chat-end">
+                                                    <div className="chat-image avatar">
+                                                        <div className="w-10 rounded-full">
+                                                            <Image src={userInfo.profilepic} alt='profile pic' width={100} height={100} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="chat-header">
+                                                        <time className="text-xs opacity-50">{moment(item.createdAt).startOf('seconds').fromNow()}</time>
+                                                    </div>
+                                                    <div className="chat-bubble">{item.messageText}</div>
                                                 </div>
-                                                <div className="chat-bubble">{item.messageText}</div>
-                                            </div>
-                                    }
-                                </div>
-                            })
+                                        }
+                                    </div>
+                                })
                             :
                             <div className="h-full form-control justify-center items-center">
                                 <svg

@@ -90,7 +90,7 @@ const messageSlice = createSlice({
                     state.unreadMessages.push(senderID);
                 } else {
                     const newFriend = state.allUsers.find((item) => item._id === senderID);
-                    state.userFriendsList.push(newFriend);
+                    state.userFriendsList.unshift(newFriend);
                     state.unreadMessages.push(senderID);
                 }
             }
