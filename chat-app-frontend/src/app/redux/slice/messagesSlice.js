@@ -27,6 +27,19 @@ export const getAllMessages = createAsyncThunk('chat/get', async ({ recieverID }
     return response.json();
 });
 
+export const getOtherUsers = createAsyncThunk('chat/user', async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/users`,
+        {
+            credentials: 'include',
+            method: 'GET',
+            headers: {
+                ['content-type']: 'application/json'
+            }
+        }
+    );
+    return response.json();
+});
+
 export const getUserConversation = createAsyncThunk('chat/conversation', async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/conversation/`,
         {
@@ -49,7 +62,10 @@ const messageSlice = createSlice({
         isMessageSending: false,
         errorMessage: '',
         isError: false,
-        chats: []
+        chats: [],
+        onlineUsersList: [],
+        unreadMessages: [],
+        allUsers: [],
     },
     reducers: {
         setNewConversation: (state, action) => {
@@ -57,6 +73,27 @@ const messageSlice = createSlice({
         },
         setNewChat: (state, action) => {
             state.onGoingUserChat = action.payload;
+            if (state.unreadMessages.length) {
+                const newUnreadMessages = state.unreadMessages.filter((item) => item !== action.payload._id);
+                state.unreadMessages = newUnreadMessages;
+            }
+        },
+        setOnlineUsers: (state, action) => {
+            state.onlineUsersList = action.payload;
+        },
+        addNewChatMessage: (state, action) => {
+            const { message: { senderID } } = action.payload;
+            if (senderID === state.onGoingUserChat?._id) state.chats.push(action.payload.message);
+            else {
+                const isUserFriend = state.userFriendsList.some((item) => item._id === senderID);
+                if (isUserFriend) {
+                    state.unreadMessages.push(senderID);
+                } else {
+                    const newFriend = state.allUsers.find((item) => item._id === senderID);
+                    state.userFriendsList.push(newFriend);
+                    state.unreadMessages.push(senderID);
+                }
+            }
         },
         resetConversation: (state) => {
             state.userFriendsList = [];
@@ -65,10 +102,27 @@ const messageSlice = createSlice({
             state.errorMessage = '';
             state.isError = false;
             state.chats = [];
-        }
+            state.onlineUsersList = [];
+            state.unreadMessages = [];
+            state.allUsers = [];
+        },
     },
     extraReducers(builder) {
         builder
+            .addCase(getOtherUsers.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getOtherUsers.fulfilled, (state, action) => {
+                state.isLoading = false;
+                if (action.payload.isError) state.isError = true;
+                if (action.payload.error) state.errorMessage = action.payload.error;
+                if (action.payload.users) {
+                    state.allUsers = [...action.payload.users];
+                }
+            })
+            .addCase(getOtherUsers.rejected, (state) => {
+                state.isLoading = false;
+            })
             .addCase(sendNewMessage.pending, (state) => {
                 state.isMessageSending = true;
             })
@@ -114,6 +168,6 @@ const messageSlice = createSlice({
     }
 });
 
-export const { setNewConversation, setNewChat, resetConversation } = messageSlice.actions;
+export const { setNewConversation, setNewChat, setOnlineUsers, resetConversation, addNewChatMessage } = messageSlice.actions;
 
 export default messageSlice.reducer;

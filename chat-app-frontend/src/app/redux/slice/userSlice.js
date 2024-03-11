@@ -41,19 +41,6 @@ export const logoutUser = createAsyncThunk('auth/logout', async () => {
     return response.json();
 });
 
-export const getOtherUsers = createAsyncThunk('chat/user', async () => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}api/users`,
-        {
-            credentials: 'include',
-            method: 'GET',
-            headers: {
-                ['content-type']: 'application/json'
-            }
-        }
-    );
-    return response.json();
-});
-
 const userSlice = createSlice({
     name: 'user',
     initialState: {
@@ -62,7 +49,6 @@ const userSlice = createSlice({
         isLoading: false,
         isError: false,
         errorMessage: '',
-        allUsers: [],
     },
     reducers: {
         resetErrorState: (state) => {
@@ -77,12 +63,12 @@ const userSlice = createSlice({
         },
         setUserAuthState: (state, action) => {
             state.userAuthenticated = true;
-            state.userInfo= action.payload;
+            state.userInfo = action.payload;
         },
     },
     extraReducers(builder) {
         builder
-            .addCase(loginUser.pending, (state, action) => {
+            .addCase(loginUser.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(loginUser.fulfilled, (state, action) => {
@@ -94,10 +80,10 @@ const userSlice = createSlice({
                     state.userAuthenticated = true;
                 }
             })
-            .addCase(loginUser.rejected, (state, action) => {
+            .addCase(loginUser.rejected, (state) => {
                 state.isLoading = false;
             })
-            .addCase(signUpNewUser.pending, (state, action) => {
+            .addCase(signUpNewUser.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(signUpNewUser.fulfilled, (state, action) => {
@@ -109,21 +95,7 @@ const userSlice = createSlice({
                     state.userAuthenticated = true;
                 }
             })
-            .addCase(signUpNewUser.rejected, (state, action) => {
-                state.isLoading = false;
-            })
-            .addCase(getOtherUsers.pending, (state, action) => {
-                state.isLoading = true;
-            })
-            .addCase(getOtherUsers.fulfilled, (state, action) => {
-                state.isLoading = false;
-                if (action.payload.isError) state.isError = true;
-                if (action.payload.error) state.errorMessage = action.payload.error;
-                if (action.payload.users) {
-                    state.allUsers = [...action.payload.users];
-                }
-            })
-            .addCase(getOtherUsers.rejected, (state) => {
+            .addCase(signUpNewUser.rejected, (state) => {
                 state.isLoading = false;
             })
             .addCase(logoutUser.pending, (state) => {
@@ -135,7 +107,6 @@ const userSlice = createSlice({
                 state.isLoading = false;
                 state.isError = false;
                 state.errorMessage = '';
-                state.allUsers = [];
             })
             .addCase(logoutUser.rejected, (state) => {
                 state.isLoading = false;

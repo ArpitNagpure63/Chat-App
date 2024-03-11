@@ -1,5 +1,6 @@
 import Conversations from "../models/conversations.js";
 import Messages from "../models/messages.js";
+import { getActiveUsers, io } from "../utility/socket.js";
 
 const newMessageController = async (req, res) => {
     const { recieverID } = req.params;
@@ -26,9 +27,15 @@ const newMessageController = async (req, res) => {
                 conversations.messages.push(newMessasge._id);
             }
 
-            await Promise.all([newMessasge.save(), conversations.save()])
+            await Promise.all([newMessasge.save(), conversations.save()]);
 
-            res.status(201).send({newMessasge});
+            // Check reciever online status
+            const isRecieverActive = getActiveUsers(recieverID);
+            console.log('isRecieverActive--->', isRecieverActive);
+            // If user online then emi the newMessage event to socketID
+            if (isRecieverActive) io.to(isRecieverActive).emit('newMessagge', newMessasge);
+
+            res.status(201).send({ newMessasge });
         } catch (e) {
             res.status(400).send({ isError: true, error: 'Error in new message controllers' });
         }

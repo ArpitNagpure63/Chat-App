@@ -1,9 +1,10 @@
 'use client';
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { getOtherUsers, logoutUser, resetErrorState, setUserAuthState } from "../redux/slice/userSlice";
-import { getUserConversation, resetConversation } from "../redux/slice/messagesSlice";
+import { io } from "socket.io-client";
+import { logoutUser, resetErrorState, setUserAuthState } from "../redux/slice/userSlice";
+import { addNewChatMessage, getOtherUsers, getUserConversation, resetConversation, setOnlineUsers } from "../redux/slice/messagesSlice";
 import Alert from "../components/alertToast";
 import Logout from "../components/logoutButton";
 import Loader from "../components/loader";
@@ -13,7 +14,9 @@ import ChatBox from "./chatBox";
 import './dashboard.css';
 
 const Dashboard = () => {
-    const { userAuthenticated, isError, errorMessage, isLoading } = useSelector(state => state.user);
+    const [socketState, setSocket] = useState(null);
+    const { userAuthenticated, isError, errorMessage, isLoading, userInfo } = useSelector(state => state.user);
+    const audioRef = useRef(null);
     const dispatch = useDispatch();
     const history = useRouter();
 
@@ -23,15 +26,44 @@ const Dashboard = () => {
         dispatch(logoutUser());
     };
 
-    useEffect(() => {
+    const addNewMessageOnChat = (message) => {
+        if (message) dispatch(addNewChatMessage({ message }));
+        audioRef.current?.play();
+    };
+
+    const getOnlineUsers = (onlineUsers) => {
+        const onlineUsersList = Object.keys(onlineUsers);
+        dispatch(setOnlineUsers(onlineUsersList));
+    };
+
+    const handleAuthenticatedUser = () => {
+        const socket = io(process.env.NEXT_PUBLIC_API_URL, {
+            query: {
+                userID: userInfo._id
+            }
+        });
+        socket.on('getOnlineUsers', getOnlineUsers);
+        socket.on('newMessagge', addNewMessageOnChat);
+        setSocket(socket);
+        dispatch(getOtherUsers());
+        dispatch(getUserConversation());
+    };
+
+    const verifyUserAuthentication = () => {
         const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
         if (userAuthenticated) {
-            dispatch(getOtherUsers());
-            dispatch(getUserConversation());
+            handleAuthenticatedUser();
         } else if (loggedInUser?._id) {
             dispatch(setUserAuthState(loggedInUser));
         } else {
             history.push('/login');
+        }
+    };
+
+    useEffect(() => {
+        verifyUserAuthentication();
+        return () => {
+            socketState?.close();
         }
     }, [userAuthenticated]);
 
@@ -44,6 +76,7 @@ const Dashboard = () => {
         <Alert isAlertVisible={isError} alertText={errorMessage} clickHandler={() => dispatch(resetErrorState())} />
         <Logout handleLogoutClick={handleLogoutClick} />
         <Loader showLoader={isLoading} />
+        <audio ref={audioRef} src="/message-recieved-sound.mp3" />
     </div>
 };
 

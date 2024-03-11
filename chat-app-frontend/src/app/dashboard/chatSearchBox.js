@@ -8,13 +8,12 @@ const ChatSearchBox = () => {
     const [searchError, setSearchError] = useState(false);
     const [userSearchInput, setUserSearchInput] = useState('');
     const [searchedUsers, setSearchedUsers] = useState([]);
-    const { allUsers } = useSelector(state => state.user);
-    const { userFriendsList, onGoingUserChat } = useSelector(state => state.message);
+    const { userFriendsList, onGoingUserChat, onlineUsersList, unreadMessages, allUsers } = useSelector(state => state.message);
     const dispatch = useDispatch();
 
     const handleTextErrorState = () => {
         if (searchError) setSearchError(false);
-        handleSearchedUserClick()
+        handleSearchedUserClick();
     };
 
     const handleInputChange = (e) => {
@@ -92,16 +91,21 @@ const ChatSearchBox = () => {
                 {
                     userFriendsList.map((item, index) => {
                         return <div className={`${onGoingUserChat && onGoingUserChat._id === item._id ? 'bg-blue-800' : 'bg-base-100'}
-                        flex items-center p-2 pl-3 h-14 mt-1 rounded-md bg-base-100 hover:glass`}
+                        flex justify-between items-center p-2 pl-3 h-14 mt-1 rounded-md bg-base-100 hover:glass`}
                             key={index}
                             onClick={() => dispatch(setNewChat(item))}
                         >
-                            <div className="avatar">
-                                <div className="w-8 rounded-full">
-                                    <Image src={item.profilepic} alt='profile pic' width={100} height={100} />
+                            <div className="flex justify-start items-center">
+                                <div className={onlineUsersList.includes(item._id) ? "avatar online" : "avatar"}>
+                                    <div className="w-8 rounded-full">
+                                        <Image src={item.profilepic} alt='profile pic' width={100} height={100} />
+                                    </div>
                                 </div>
+                                <div className="ml-3">{item.name}</div>
                             </div>
-                            <div className="ml-3">{item.name}</div>
+                            {unreadMessages.includes(item._id) && <div className="indicator-item badge badge-accent">
+                                {unreadMessages.filter(userId => userId === item._id).length}
+                            </div>}
                         </div>
                     })
                 }
