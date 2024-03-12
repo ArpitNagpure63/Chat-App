@@ -1,6 +1,9 @@
 # Chat-App
 
-Real time chat app built on NextJS, Redux, Tailwind CSS, NodeJS, Express, JWT, Socket.io libraries.
+Real-time chat app built on NextJS, Redux, Tailwind CSS, NodeJS, Express, JWT, Socket.io libraries.
+
+# Chat App Demo
+https://github.com/iarpitnagpure/Chat-App/assets/100276120/40c68d9f-56fc-411d-8934-387ad8d77f0f
 
 ## Add Environment Variables
 
